@@ -1,13 +1,12 @@
 
-
-import React, { useState } from 'react';
+import {useState} from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Paper, Tabs, Tab, ThemeProvider, createTheme, Box } from '@mui/material';
+import { Box, Button, Paper, TextField, Typography, Tabs, Tab } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import NavBar from './components/Navbar';
 import EditSection from './components/EditSection';
 import PreviewSection from './components/PreviewSection';
 import CopySection from './components/CopySection';
-import NavBar from './components/Navbar';
-import './App.css';
 
 function App() {
   const [metaData, setMetaData] = useState(null);
@@ -16,7 +15,26 @@ function App() {
   const [tabIndex, setTabIndex] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
 
+  
+  const isValidUrl = (url) => {
+    const urlPattern = new RegExp(
+      '^(https?:\\/\\/)?' + 
+      '((([a-zA-Z0-9$-_.+!*\'(),]+)@)?' + 
+      '([a-zA-Z0-9.-]+(\\.[a-zA-Z]{2,}))' + 
+      '|localhost|' + 
+      '(([0-9]{1,3}\\.){3}[0-9]{1,3}))' + 
+      '(:[0-9]{2,5})?' + 
+      '(\\/.*)?$' 
+    );
+    return urlPattern.test(url.trim());
+  };
+
   const fetchMetaTags = async () => {
+    if (!isValidUrl(url)) {
+      alert("Please enter a valid URL.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await axios.get('/mockData.json'); 
@@ -53,7 +71,6 @@ function App() {
   const handleSave = (updatedMetaData) => {
     console.log("Saving changes:", updatedMetaData);
     setMetaData(updatedMetaData);
-    
   };
 
   const theme = createTheme({
